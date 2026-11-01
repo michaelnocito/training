@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>
+  (function () {
+    var localHost = location.protocol === 'file:' ||
+      /^(localhost|127\.0\.0\.1|0\.0\.0\.0|\[::1\])$/.test(location.hostname) ||
+      /^(192\.168\.|10\.)/.test(location.hostname);
+    var optedOut = false;
+    try {
+      var p = new URLSearchParams(location.search).get('ga');
+      if (p === 'off') localStorage.setItem('gaOptOut', '1');
+      else if (p === 'on') localStorage.removeItem('gaOptOut');
+      optedOut = localStorage.getItem('gaOptOut') === '1';
+    } catch (e) {}
+    if (localHost || optedOut) window['ga-disable-G-6C09BL3WH1'] = true;
+  })();
+</script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-6C09BL3WH1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-6C09BL3WH1');
+</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="google-site-verification" content="czfO_UVQFJNdbuvFbaaU6XjLZdOiAIjvhZYsgB4O38w" />
+<meta name="google-adsense-account" content="ca-pub-7244244607936879">
+<title>Michael Nocito — Senior Implementation Analyst</title>
+<link rel="canonical" href="https://michaelnocito.github.io/">
+<meta name="description" content="Michael Nocito is a senior implementation analyst who takes organizations from kickoff to go-live: requirements, configuration, data migration, testing, training, and support after launch.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:#FBFCFD; --panel:#FFFFFF; --sunken:#F5F7F8; --line:#E4E7EA; --line-bd:#C3C7CE;
+    --ink:#09090B; --dim:#52525B; --accent:#0E7490; --accent-d:#155E6E;
+    --accent-soft:#E0F5F9; --accent-bd:#A5E1ED;
+    --shadow:0 1px 2px rgba(9,9,11,.05), 0 8px 24px rgba(9,9,11,.07);
+    --shadow-lg:0 4px 10px rgba(9,9,11,.10), 0 18px 44px rgba(9,9,11,.13);
+    --font-display:'Space Grotesk','IBM Plex Sans',system-ui,sans-serif;
+    --font-sans:'IBM Plex Sans',system-ui,-apple-system,Roboto,sans-serif;
+    color-scheme: light;
+    box-sizing: border-box;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg:#0F1114; --panel:#17191D; --sunken:#1E2126; --line:#2A2E34; --line-bd:#3A3F47;
+      --ink:#F4F5F6; --dim:#A1A6AF; --accent:#38BDF8; --accent-d:#7DD3FC;
+      --accent-soft:#0F2A33; --accent-bd:#1E4A5A;
+      --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px rgba(0,0,0,.35);
+      --shadow-lg:0 4px 10px rgba(0,0,0,.5), 0 18px 44px rgba(0,0,0,.5);
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg:#0F1114; --panel:#17191D; --sunken:#1E2126; --line:#2A2E34; --line-bd:#3A3F47;
+    --ink:#F4F5F6; --dim:#A1A6AF; --accent:#38BDF8; --accent-d:#7DD3FC;
+    --accent-soft:#0F2A33; --accent-bd:#1E4A5A;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px rgba(0,0,0,.35);
+    --shadow-lg:0 4px 10px rgba(0,0,0,.5), 0 18px 44px rgba(0,0,0,.5);
+    color-scheme: dark;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-padding-top: env(safe-area-inset-top, 0px); }
+  body {
+    background: var(--bg); color: var(--ink);
+    font: 400 16px/1.65 var(--font-sans);
+    -webkit-font-smoothing: antialiased; min-height: 100vh;
+  }
+  h1, h2, .tile-name, .logo { font-family: var(--font-display); letter-spacing: -0.02em; }
+  svg.i { width: 1em; height: 1em; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; vertical-align: -0.14em; }
+  .wrap { max-width: 880px; margin: 0 auto; padding: 0 20px; }
+
+  .topbar { border-bottom: 1px solid var(--line); background: var(--panel); }
+  .topbar .wrap { display: flex; align-items: center; gap: 12px; padding-top: 12px; padding-bottom: 12px; }
+  .logo {
+    font-weight: 700; font-size: 15px; color: var(--accent); background: var(--accent-soft);
+    border: 1px solid var(--accent-bd); width: 38px; height: 38px;
+    display: grid; place-items: center; border-radius: 10px; flex-shrink: 0;
+  }
+  .brand-text { display: flex; flex-direction: column; line-height: 1.25; }
+  .brand-text strong { font-family: var(--font-display); font-size: 15px; }
+  .brand-text span { font-size: 12.5px; color: var(--dim); }
+
+  .hero { margin: 32px 0 8px; }
+  .hero-card {
+    background: var(--panel); border: 1px solid var(--line); border-radius: 18px;
+    box-shadow: var(--shadow); padding: 32px 32px 28px;
+  }
+  .eyebrow { font-size: 12px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); margin-bottom: 10px; }
+  h1 { font-size: clamp(32px, 6vw, 44px); font-weight: 700; line-height: 1.08; margin-bottom: 16px; }
+  h1 span { color: var(--accent); }
+  .intro { font-size: 18px; line-height: 1.6; color: var(--dim); max-width: 700px; }
+  .intro strong { color: var(--ink); font-weight: 600; }
+  .where { margin-top: 12px; font-size: 16px; line-height: 1.6; color: var(--dim); max-width: 700px; }
+  .cta { margin-top: 22px; display: flex; flex-wrap: wrap; gap: 10px; }
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px; min-height: 44px;
+    padding: 9px 18px; border-radius: 10px; font-size: 14.5px; font-weight: 600;
+    text-decoration: none; color: var(--ink); background: var(--panel);
+    border: 1px solid var(--line-bd); transition: background .15s, border-color .15s, color .15s;
+  }
+  .btn:hover { background: var(--accent-soft); border-color: var(--accent-bd); color: var(--accent-d); }
+  .btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .btn.primary:hover { background: var(--accent-d); border-color: var(--accent-d); color: #fff; }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .btn.primary, :root:not([data-theme="light"]) .btn.primary:hover { color: #06222B; } }
+  :root[data-theme="dark"] .btn.primary, :root[data-theme="dark"] .btn.primary:hover { color: #06222B; }
+
+  .label {
+    font-size: 12px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase;
+    color: var(--dim); margin: 40px 0 14px; display: flex; align-items: center; gap: 12px;
+  }
+  .label::after { content: ''; flex: 1; height: 1px; background: var(--line); }
+
+  /* Tiles */
+  .tiles { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+  .tile {
+    background: var(--panel); border: 1px solid var(--line); border-left: 4px solid var(--accent);
+    border-radius: 12px; box-shadow: var(--shadow); padding: 18px 18px 20px;
+    text-decoration: none; color: inherit; display: flex; flex-direction: column; gap: 8px;
+    transition: transform .15s, box-shadow .15s;
+  }
+  .tile:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); }
+  .tile-top { display: flex; align-items: center; gap: 8px; }
+  .tile-name { font-size: 18px; font-weight: 700; line-height: 1.25; flex: 1; }
+  .arrow { color: var(--dim); transition: color .15s, transform .15s; }
+  .tile:hover .arrow { color: var(--accent); transform: translate(2px,-2px); }
+  .tile p { font-size: 14.5px; line-height: 1.55; color: var(--dim); }
+
+  .feature { margin-bottom: 14px; padding: 22px 22px 22px 20px; }
+  .feature p { font-size: 15.5px; }
+  .feature .topics { font-size: 13.5px; color: var(--accent-d); font-weight: 500; }
+
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding: 22px 0 28px; font-size: 14px; color: var(--dim); }
+  .foot { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px 24px; align-items: center; }
+  .foot a { color: var(--dim); text-decoration: none; }
+  .foot a:hover { color: var(--accent); }
+  .foot nav { display: flex; flex-wrap: wrap; gap: 6px 18px; }
+  .kit { margin-top: 14px; font-size: 14px; }
+  .kit a { color: var(--accent-d); font-weight: 500; text-decoration: none; }
+  .kit a:hover { text-decoration: underline; }
+  .kit.sub { margin-top: 6px; }
+
+  @media (max-width: 720px) {
+    .hero-card { padding: 24px 20px 22px; }
+    .intro { font-size: 17px; }
+    .tiles { grid-template-columns: 1fr; }
+    .btn { flex: 1 1 auto; justify-content: center; }
+  }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="wrap">
+    <span class="logo">MN</span>
+    <span class="brand-text">
+      <strong>Michael Nocito</strong>
+      <span>Senior Implementation Analyst</span>
+    </span>
+  </div>
+</header>
+
+<main>
+  <div class="wrap">
+
+    <section class="hero">
+      <div class="hero-card">
+        <div class="eyebrow">Glassboro, NJ · Open to remote work</div>
+        <h1>Michael <span>Nocito.</span></h1>
+        <p class="intro">
+          Senior implementation analyst. I take organizations from kickoff to go-live: requirements, configuration, data migration, testing, training, and support after launch.
+        </p>
+        <p class="where">I’ve implemented contract and document management software for large organizations, where many departments and workflows have to fit into one system.</p>
+        <div class="cta">
+          <a class="btn primary" href="mailto:hello.michaelnocito@gmail.com"><svg class="i" viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 6L2 7"/></svg> Email me</a>
+          <a class="btn" href="https://linkedin.com/in/michaelnocito" target="_blank" rel="noopener"><svg class="i" viewBox="0 0 24 24"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-4 0v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg> LinkedIn</a>
+        </div>
+      </div>
+    </section>
+
+
+
+    <section>
+      <div class="label">Training &amp; tools</div>
+      <a class="tile feature" href="https://michaelnocito.github.io/training/">
+        <div class="tile-top"><span class="tile-name">Training &amp; Documentation</span><svg class="i arrow" viewBox="0 0 24 24"><path d="M7 17 17 7M7 7h10v10"/></svg></div>
+        <p>Interactive lessons, practice labs, and guides I’ve written to help people learn new systems.</p>
+        <p class="topics">Implementation planning · Faster timelines · API troubleshooting · Field mapping</p>
+      </a>
+      <div class="tiles">
+        <a class="tile" href="https://michaelnocito.github.io/recordforge/" target="_blank" rel="noopener">
+          <div class="tile-top"><span class="tile-name">RecordForge</span><svg class="i arrow" viewBox="0 0 24 24"><path d="M7 17 17 7M7 7h10v10"/></svg></div>
+          <p>Makes realistic fictional documents for testing without real client data.</p>
+        </a>
+        <a class="tile" href="https://michaelnocito.github.io/spreadsheet-cleaner/" target="_blank" rel="noopener">
+          <div class="tile-top"><span class="tile-name">Spreadsheet Cleaner</span><svg class="i arrow" viewBox="0 0 24 24"><path d="M7 17 17 7M7 7h10v10"/></svg></div>
+          <p>Checks a messy spreadsheet and explains the problems in plain language.</p>
+        </a>
+      </div>
+    </section>
+
+
+  </div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="foot">
+      <span>Michael Nocito</span>
+      <nav>
+        <a href="https://michaelnocito.github.io/analyst-prep-kit/about.html">About</a>
+        <a href="https://michaelnocito.github.io/analyst-prep-kit/contact.html">Contact</a>
+        <a href="https://michaelnocito.github.io/privacy.html">Privacy</a>
+        <a href="https://github.com/michaelnocito" target="_blank" rel="noopener">GitHub</a>
+      </nav>
+    </div>
+    <p class="kit">Free learning resources: <a href="https://michaelnocito.github.io/analyst-prep-kit/" target="_blank" rel="noopener">Analyst Prep Kit →</a></p>
+    <p class="kit sub">Outside of work: <a href="https://michaelnocito.github.io/art/">Charcoal portraits →</a></p>
+  </div>
+</footer>
+
+</body>
+</html>
