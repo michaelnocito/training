@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><title>SaaS Implementation Lab</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);--bg:#f6f7fb;--card:#fff;--tx:#1d2330;--mu:#6b7385;--pr:#e11d74;--ok:#16a34a;--bad:#dc2626;--bd:#e3e6ef;--code:#eef0f7}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#12141c;--card:#1c2030;--tx:#e8eaf2;--mu:#98a0b5;--bd:#2b3046;--code:#262b40}}
+:root[data-theme="dark"]{--bg:#12141c;--card:#1c2030;--tx:#e8eaf2;--mu:#98a0b5;--bd:#2b3046;--code:#262b40}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.5 system-ui,-apple-system,Segoe UI,sans-serif}
+#app{max-width:600px;margin:0 auto;padding:16px}
+h1{font-size:22px;margin:0}h2{font-size:18px;margin:0 0 8px}
+.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.xp{background:var(--pr);color:#fff;border-radius:99px;padding:4px 12px;font-weight:700;font-size:14px}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:14px;margin:10px 0}
+.day{font-size:12px;font-weight:700;color:var(--pr);text-transform:uppercase;letter-spacing:.06em;margin-top:18px}
+.les{display:flex;gap:12px;align-items:center;cursor:pointer}
+.dot{width:34px;height:34px;border-radius:50%;background:var(--code);display:grid;place-items:center;font-weight:700;flex:none}
+.done .dot{background:var(--ok);color:#fff}
+.mu{color:var(--mu);font-size:14px}
+button{font:inherit;font-weight:700;border:0;border-radius:12px;padding:11px 16px;background:var(--pr);color:#fff;cursor:pointer;width:100%;margin-top:10px}
+button.g{background:var(--code);color:var(--tx)}
+.opt{display:block;width:100%;text-align:left;background:var(--card);color:var(--tx);border:2px solid var(--bd);font-weight:500;margin-top:8px}
+.opt.ok{border-color:var(--ok);background:rgba(22,163,74,.12)}.opt.no{border-color:var(--bad);background:rgba(220,38,38,.12)}.opt.sel{border-color:var(--pr);background:rgba(225,29,116,.1)}
+.cats{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}.cats button{width:auto;margin:0;padding:6px 10px;font-size:13px}.cats button.sel{background:var(--pr);color:#fff}
+code{background:var(--code);border-radius:6px;font-size:13px;padding:1px 5px}
+.win{border:2px solid var(--ok)}.f{margin:12px 0;padding-bottom:8px;border-bottom:1px solid var(--bd)}
+.back{background:none;color:var(--mu);width:auto;padding:4px 0;margin:0}
+.fb{margin-top:10px;padding:10px;border-radius:10px;background:var(--code);font-size:15px}
+.fb div{margin:4px 0}.pl{padding:8px;margin:6px 0;border-radius:10px;background:var(--code);font-size:15px}
+</style></head><body><div id="app"></div>
+<script>
+const KEY="saasImpl";
+const M=[
+{g:"Process",t:"Phases in order",ty:"order",br:`An implementation turns a signed deal into a system the customer actually uses. Most projects follow the same arc, and each phase feeds the next: requirements drive configuration, and trial loads feed testing.`,o:["Discovery & kickoff","Requirements & solution design","Configuration & build","Data migration & integrations (trial loads)","Testing & UAT","Training","Go-live (cutover)","Hypercare & handoff"],perm:[4,0,6,2,7,1,5,3],why:`Discover, design, build, migrate, test, train, launch, support. Skipping ahead (like training before it's built) creates rework.`},
+{g:"Process",t:"Great discovery questions",ty:"multi",br:`Discovery sets the project up to succeed. Strong questions focus on <b>outcomes, people, systems, and constraints</b>, not features.`,pr:`Select the 4 strongest discovery questions.`,I:[
+{x:`What business problem are you solving, and how will you measure success?`,c:1,e:`Defines outcomes and success criteria.`},
+{x:`Which features do you want enabled?`,c:0,e:`Jumps to solutions before understanding goals.`},
+{x:`Who makes decisions, and who will use this daily?`,c:1,e:`Identifies sponsors, approvers, and end users.`},
+{x:`Can you send all your data right now?`,c:0,e:`Premature. First learn which data matters and where it lives.`},
+{x:`What systems must connect, and what data must move?`,c:1,e:`Surfaces integrations and migration scope.`},
+{x:`Which feature did you like most in the demo?`,c:0,e:`Interesting, but it doesn't scope the project.`},
+{x:`What deadlines or events drive the go-live date?`,c:1,e:`Exposes real constraints and risk.`}],why:`Outcomes, stakeholders, systems, and dates are the foundation of the plan and the SOW.`},
+{g:"Process",t:"Scope and requirements",ty:"mc",br:`<b>Scope</b> is what's agreed in the statement of work (SOW). New asks go through a <b>change request</b>: describe it, estimate the impact on time, cost, and risk, and let the sponsor decide.`,Q:[
+{q:`Mid-project, the customer asks for a custom report that isn't in the SOW. Best response?`,o:[`Build it quietly`,`Refuse flatly`,`Log a change request with impact, and let the sponsor decide`,`Promise it "later" with no record`],a:2,e:`Change control keeps the project honest and gives the sponsor a real choice.`},
+{q:`The customer demands go-live in 4 weeks. Your plan says 10. Best approach?`,o:[`Agree and hope`,`Show dependencies and what could fit in 4 weeks, such as a phased launch`,`Say it's impossible`,`Quietly cut testing`],a:1,e:`Offer options grounded in the plan. Never cut testing silently.`},
+{q:`A requirement says "reports should be easy". Next step?`,o:[`Start building`,`Ask which reports, for whom, and what "easy" means, then write acceptance criteria`,`Skip it`,`Ask them to re-sign`],a:1,e:`Vague requirements become disputes. Make them testable.`}],why:`Defined scope plus change control protects both sides.`},
+{g:"Data migration",t:"Migration approach",ty:"mc",br:`Data migration is the highest-risk workstream. The pattern: <b>profile → cleanse → map → trial load → reconcile → repeat → final load</b>.`,Q:[
+{q:`You receive the customer's source data file. First step?`,o:[`Load it`,`Profile it: duplicates, blanks, formats, volumes`,`Delete old rows`,`Email it around`],a:1,e:`Know the data's problems before you map.`},
+{q:`Why run trial loads before the final load?`,o:[`To bill more`,`To find mapping issues early and time the real load`,`They're optional`,`To train users`],a:1,e:`Rehearsals expose problems while they're cheap to fix.`},
+{q:`The source system keeps changing up to cutover. Best handling?`,o:[`Ignore changes`,`Freeze changes, or plan a delta load of changes since the last full load`,`Reload randomly`,`Move the date`],a:1,e:`Plan explicitly for in-flight changes.`}],why:`Rehearse early, reconcile every load, and plan for changes in flight.`},
+{g:"Data migration",t:"Reconciliation lab",ty:"multi",br:`<b>Reconciliation</b> proves what you loaded matches the source. Counts are only the first check: compare values, formats, and duplicates too.<br><b>Source: 8 records. Loaded: 8 records.</b> Safe to sign off? Tap every row that is <b>wrong</b>.`,pr:`Compare source to loaded for each record.`,I:[
+{x:`#101 Ortiz, Dana · 2021-03-04 · $1,200.00 → same`,c:0,e:`Matches.`},
+{x:`#102 Vega, Luis · $850.00 → loaded $85.00`,c:1,e:`Amount truncated.`},
+{x:`#103 Shah, Priya → not found in loaded data`,c:1,e:`Missing record.`},
+{x:`#104 Brown, Sam · 2020-11-03 → loaded 2020-03-11`,c:1,e:`Day and month swapped.`},
+{x:`#105 Kim, Joon → same`,c:0,e:`Matches.`},
+{x:`#106 O'Neil, Pat → loaded ONeil, Pat`,c:1,e:`Apostrophe dropped.`},
+{x:`#107 Lopez, Ana → loaded twice`,c:1,e:`Duplicate. The duplicate is why counts still add up to 8.`},
+{x:`#108 Patel, Rina → same`,c:0,e:`Matches.`}],why:`Counts matched, but 5 of 8 records had problems. Always reconcile values, not just totals.`},
+{g:"Testing and training",t:"UAT defect triage",ty:"tri",br:`During <b>UAT</b> the customer tests against agreed requirements. Triage each issue: <b>Blocker</b> (can't go live), <b>Major</b> (serious, needs a fix or an agreed workaround), <b>Minor</b> (cosmetic or low impact), <b>Enhancement</b> (a new request that goes to change control).`,C:["Blocker","Major","Minor","Enhancement"],I:[
+{x:`Users cannot log in through single sign-on.`,a:0,e:`Nobody can use the system.`},
+{x:`Tax is wrong for one region on invoice exports. A manual workaround exists.`,a:1,e:`Serious, but a workaround exists.`},
+{x:`The logo is 2px off-center on the login page.`,a:2,e:`Cosmetic.`},
+{x:`Customer wants a dashboard widget that isn't in scope.`,a:3,e:`New request, so change control.`},
+{x:`Imports fail for any file over 1,000 rows. Customer files run about 20,000.`,a:0,e:`Breaks a core business process.`},
+{x:`A help tooltip has a typo.`,a:2,e:`Low impact.`}],why:`Triage with agreed definitions keeps UAT focused on what blocks launch.`},
+{g:"Testing and training",t:"Training strategy",ty:"mc",br:`Training drives adoption. A common approach: <b>train the admins first</b> (they'll support everyone else), then role-based end-user sessions using the customer's own configured scenarios.`,Q:[
+{q:`Best training order?`,o:[`Everyone at once with a generic demo`,`Admins first, then role-based sessions using the customer's configuration`,`Only a PDF`,`After problems appear`],a:1,e:`Admins become the first line of support.`},
+{q:`After launch, users still struggle with one task. Best fix?`,o:[`Tell them to read the manual`,`Role-based quick guide and office hours, and check whether the process or configuration is the real issue`,`Ignore it`,`Disable the feature`],a:1,e:`Sometimes the fix is configuration, not training.`}],why:`Train for real scenarios, support the admins, and watch for process gaps.`},
+{g:"Launch",t:"Go-live readiness checklist",ty:"multi",br:`Go-live readiness is a checklist, not a feeling. Select only what must be true <b>before</b> launch.`,pr:`Select the items required before go-live.`,I:[
+{x:`Customer has signed off UAT acceptance`,c:1,e:`Formal acceptance.`},
+{x:`Final migration rehearsal reconciled to source`,c:1,e:`Proof the data is right.`},
+{x:`Admins are trained`,c:1,e:`They'll support users on day one.`},
+{x:`Rollback or contingency plan agreed`,c:1,e:`Know what happens if launch fails.`},
+{x:`Support contacts and hypercare schedule communicated`,c:1,e:`Users must know where to get help.`},
+{x:`Every UAT enhancement request is built`,c:0,e:`Enhancements go through change control, not launch gates.`},
+{x:`All cosmetic defects are fixed`,c:0,e:`Minor items can be tracked for later.`},
+{x:`Dashboard color theme is finalized`,c:0,e:`Nice to have, not a gate.`}],why:`Launch gates are evidence of readiness: acceptance, reconciled data, trained admins, a rollback plan, and support in place.`},
+{g:"Launch",t:"Go / no-go",ty:"mc",br:`A <b>go/no-go</b> decision weighs readiness evidence against risk. You can go with open items if they're understood, low-risk, and tracked.`,Q:[
+{q:`Status: 0 blockers, 1 major defect with an agreed workaround, rehearsal reconciled, admins trained. Decision?`,o:[`No-go until perfect`,`Go, with the workaround documented and a dated fix tracked`,`Delay a month`,`Skip the decision`],a:1,e:`Known, low-risk items with a workaround don't have to stop a launch.`},
+{q:`Reconciliation shows a 3% mismatch nobody can explain. Decision?`,o:[`Go anyway`,`No-go until it's explained and resolved`,`Hide it`,`Tell users to double-check`],a:1,e:`Unexplained data problems are launch risks.`}],why:`Go decisions rest on evidence, not hope.`},
+{g:"Launch",t:"Hypercare and handoff",ty:"mc",br:`<b>Hypercare</b> is the intensive support window right after launch (often 2 to 4 weeks). Then comes <b>handoff</b> to ongoing support, with documentation.`,Q:[
+{q:`Best hypercare habit in week one?`,o:[`Wait for tickets`,`Daily check-ins and an issue log prioritized by impact`,`Disappear`,`Weekly email only`],a:1,e:`Be proactive while usage is new.`},
+{q:`What belongs in a good handoff?`,o:[`Nothing`,`Configuration documentation, runbook, support contacts, open items, lessons learned`,`A thank-you only`,`The raw data files`],a:1,e:`Support teams need the full picture.`}],why:`Stay close after launch, then hand off cleanly.`},
+{g:"Communication",t:"Status and escalation",ty:"mc",br:`Communicate early and plainly: <b>status, issue, impact, plan, ask</b>. Escalate risks while there are still options.`,Q:[
+{q:`A deliverable will slip two weeks. Best message?`,o:[`Wait until it's done`,`Status, cause, impact, new plan, and what you need, sent early`,`Blame the customer`,`A vague update`],a:1,e:`Early, specific, and with a plan.`},
+{q:`When do you escalate?`,o:[`Never`,`When a risk threatens date or budget and you can't resolve it at your level, early, with options`,`Only after failure`,`For every small issue`],a:1,e:`Escalate with options, not surprises.`},
+{q:`The customer sends an angry email about a bug. Best first step?`,o:[`Argue`,`Acknowledge, share facts and a plan, and offer a call`,`Ignore it`,`Forward to everyone`],a:1,e:`Lower the temperature, then solve.`}],why:`Specific, early communication builds trust.`},
+{g:"Communication",t:"Vocabulary check",ty:"mc",br:`Quick terms that come up in implementation interviews.`,Q:[
+{q:`UAT is…`,o:[`Customer testing against agreed requirements before go-live`,`A server type`,`A pricing tier`,`Final training`],a:0,e:`User acceptance testing.`},
+{q:`Cutover is…`,o:[`A software bug`,`The switch from the old system to the new one, including the final data load`,`A meeting`,`A contract clause`],a:1,e:`The actual transition moment.`},
+{q:`A SOW defines…`,o:[`Server settings`,`Agreed scope, deliverables, and responsibilities`,`Team salaries`,`User passwords`],a:1,e:`Statement of work.`},
+{q:`A RACI chart shows…`,o:[`Who is Responsible, Accountable, Consulted, Informed`,`Revenue and costs`,`Release dates`,`Server load`],a:0,e:`Roles per task or decision.`},
+{q:`A sandbox is…`,o:[`A live production system`,`A safe test environment without live data`,`A backup`,`A dashboard`],a:1,e:`Where you test safely.`}],why:`Know the vocabulary and explain it in plain words.`}];
+let S={xp:0,done:{}};try{S=JSON.parse(localStorage.getItem(KEY))||S}catch(e){}
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}},$=id=>document.getElementById(id),A=$("app");
+let cur=0,won=false,mi=0,msc=0,sel=new Set(),pl=[],ch=[];
+function home(){const n=Object.keys(S.done).length;let h=`<div class=top><h1>SaaS Implementation Lab</h1><span class=xp>⚡ ${S.xp} XP</span></div><div class=mu>Hands-on practice for the software implementation process: planning, data migration, testing, launch, and communication. ${n} of ${M.length} missions done.</div>`;
+let last="";M.forEach((m,i)=>{if(m.g!=last){h+=`<div class=day>${m.g}</div>`;last=m.g}h+=`<div class="card les ${S.done[i]?"done":""}" onclick="openM(${i})"><div class=dot>${S.done[i]?"✓":i+1}</div><div><b>${m.t}</b></div></div>`});
+h+=`<button class=g onclick="if(confirm('Reset progress?')){S={xp:0,done:{}};save();home()}">Reset progress</button>`;A.innerHTML=h}
+function openM(i){if(i>=M.length)return home();cur=i;won=false;mi=0;msc=0;sel=new Set();pl=[];ch=[];const m=M[i];
+let h=`<button class=back onclick="home()">← Missions</button><h2>${m.t}</h2><div class=card>${m.br}</div>`;
+if(m.ty=="order")h+=`<div class=card><div class=mu>Tap the phases in the order they happen.</div><div id=pl></div><div id=ol></div><div id=fb></div></div>`;
+else if(m.ty=="multi")h+=`<div class=card><div class=mu>${m.pr}</div>${m.I.map((it,k)=>`<button class=opt id=i${k} onclick="tg(${k})">${it.x}</button>`).join("")}<button onclick="ckm()">Check</button><div id=fb></div></div>`;
+else if(m.ty=="tri")h+=`<div class=card>${m.I.map((it,k)=>`<div class=f>${it.x}<div class=cats>${m.C.map((c,j)=>`<button class=g id=c${k}_${j} onclick="tr(${k},${j})">${c}</button>`).join("")}</div></div>`).join("")}<button onclick="ckt()">Check</button><div id=fb></div></div>`;
+else h+=`<div id=mq></div>`;
+A.innerHTML=h+`<div id=win></div>`;if(m.ty=="order")ord();if(m.ty=="mc")mq()}
+function ord(){const m=M[cur];$("pl").innerHTML=pl.map((j,k)=>`<div class=pl>${k+1}. ${m.o[j]}</div>`).join("");
+$("ol").innerHTML=m.perm.filter(j=>!pl.includes(j)).map(j=>`<button class=opt onclick="po(${j})">${m.o[j]}</button>`).join("");if(pl.length==m.o.length)win()}
+function po(j){if(j==pl.length){pl.push(j);$("fb").innerHTML="";ord()}else $("fb").innerHTML=`<div class=fb>Not yet. What has to exist or be agreed before that step?</div>`}
+function tg(k){sel.has(k)?sel.delete(k):sel.add(k);$("i"+k).classList.toggle("sel")}
+function ckm(){const m=M[cur];let ok=true,o="";m.I.forEach((it,k)=>{const s=sel.has(k),c=!!it.c;if(s!=c)ok=false;o+=`<div>${s&&c?"✅ Right:":s?"❌ Shouldn't be selected:":c?"⚠ Missed:":"✓ Correctly left out:"} ${it.e}</div>`});
+$("fb").innerHTML=`<div class=fb>${o}${ok?"":"<div><b>Adjust and check again.</b></div>"}</div>`;if(ok)win()}
+function tr(k,j){ch[k]=j;M[cur].C.forEach((c,x)=>$(`c${k}_${x}`).classList.toggle("sel",x==j))}
+function ckt(){const m=M[cur];if(m.I.some((_,k)=>ch[k]==null)){$("fb").innerHTML=`<div class=fb>Pick a category for every item.</div>`;return}
+let ok=true,o="";m.I.forEach((it,k)=>{const r=ch[k]==it.a;if(!r)ok=false;o+=`<div>${r?"✅":"❌"} ${r?"":"Should be "+m.C[it.a]+". "}${it.e}</div>`});
+$("fb").innerHTML=`<div class=fb>${o}${ok?"":"<div><b>Adjust and check again.</b></div>"}</div>`;if(ok)win()}
+function mq(){const m=M[cur];if(mi>=m.Q.length){$("mq").innerHTML=`<div class=card>You got ${msc}/${m.Q.length}.</div>`;return win()}
+const q=m.Q[mi];$("mq").innerHTML=`<div class=card><h2>${q.q}</h2>${q.o.map((o,k)=>`<button class=opt onclick="mp(${k},this)">${o}</button>`).join("")}<div id=fb></div></div>`}
+function mp(k,el){const q=M[cur].Q[mi];if(document.querySelector(".opt.ok,.opt.no"))return;const ok=k==q.a;if(ok)msc++;el.classList.add(ok?"ok":"no");
+if(!ok)document.querySelectorAll(".opt")[q.a].classList.add("ok");$("fb").innerHTML=`<div class=fb>${ok?"✅ Correct.":"❌ Not quite."} ${q.e}</div><button onclick="mi++;mq()">Next</button>`}
+function win(){if(won)return;won=true;const first=!S.done[cur];if(first){S.done[cur]=1;S.xp+=50}save();
+$("win").innerHTML=`<div class="card win"><b>✅ Mission complete!${first?" +50 XP":""}</b><p>${M[cur].why}</p><button onclick="openM(${cur+1})">${cur+1<M.length?"Next mission":"Back to missions"}</button></div>`;$("win").scrollIntoView({behavior:"smooth"})}
+home();
+</script></body></html>

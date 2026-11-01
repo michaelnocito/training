@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta name="robots" content="noindex,nofollow"><meta charset="utf-8"><title>Fast-Track Implementation Lab</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);--bg:#f6f7fb;--card:#fff;--tx:#1d2330;--mu:#6b7385;--pr:#e11d74;--ok:#16a34a;--bad:#dc2626;--bd:#e3e6ef;--code:#eef0f7}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#12141c;--card:#1c2030;--tx:#e8eaf2;--mu:#98a0b5;--bd:#2b3046;--code:#262b40}}
+:root[data-theme="dark"]{--bg:#12141c;--card:#1c2030;--tx:#e8eaf2;--mu:#98a0b5;--bd:#2b3046;--code:#262b40}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.5 system-ui,-apple-system,Segoe UI,sans-serif}
+#app{max-width:600px;margin:0 auto;padding:16px}
+h1{font-size:22px;margin:0}h2{font-size:18px;margin:0 0 8px}
+.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.xp{background:var(--pr);color:#fff;border-radius:99px;padding:4px 12px;font-weight:700;font-size:14px}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:14px;margin:10px 0}
+.day{font-size:12px;font-weight:700;color:var(--pr);text-transform:uppercase;letter-spacing:.06em;margin-top:18px}
+.les{display:flex;gap:12px;align-items:center;cursor:pointer}
+.dot{width:34px;height:34px;border-radius:50%;background:var(--code);display:grid;place-items:center;font-weight:700;flex:none}
+.done .dot{background:var(--ok);color:#fff}
+.mu{color:var(--mu);font-size:14px}
+button{font:inherit;font-weight:700;border:0;border-radius:12px;padding:11px 16px;background:var(--pr);color:#fff;cursor:pointer;width:100%;margin-top:10px}
+button.g{background:var(--code);color:var(--tx)}
+.opt{display:block;width:100%;text-align:left;background:var(--card);color:var(--tx);border:2px solid var(--bd);font-weight:500;margin-top:8px}
+.opt.ok{border-color:var(--ok);background:rgba(22,163,74,.12)}.opt.no{border-color:var(--bad);background:rgba(220,38,38,.12)}.opt.sel{border-color:var(--pr);background:rgba(225,29,116,.1)}
+.cats{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}.cats button{width:auto;margin:0;padding:6px 10px;font-size:13px}.cats button.sel{background:var(--pr);color:#fff}
+.win{border:2px solid var(--ok)}.f{margin:12px 0;padding-bottom:8px;border-bottom:1px solid var(--bd)}
+.back{background:none;color:var(--mu);width:auto;padding:4px 0;margin:0}
+.fb{margin-top:10px;padding:10px;border-radius:10px;background:var(--code);font-size:15px}
+.fb div{margin:4px 0}.pl{padding:8px;margin:6px 0;border-radius:10px;background:var(--code);font-size:15px}
+.say{margin-top:8px;padding:10px;border-radius:10px;background:rgba(22,163,74,.14);border:1px solid var(--ok);font-size:15px}
+table{width:100%;border-collapse:collapse;font-size:14px}td,th{border:1px solid var(--bd);padding:5px;text-align:left}
+</style></head><body><div id="app"></div>
+<script>
+const KEY="fastTrackImpl";
+const M=[
+{g:"Foundation",t:"Right-sizing: the big idea",ty:"mc",br:`A 3 to 4 month project and a 7 to 14 day project are not the same process run faster. The short one works because <b>scope is fixed, steps are standard, and unknowns are removed before kickoff</b>.<table><tr><th></th><th>Long (months)</th><th>Fast-track (days)</th></tr><tr><td>Scope</td><td>Custom, negotiated</td><td>Fixed package</td></tr><tr><td>Setup</td><td>Designed per customer</td><td>Template + checklist</td></tr><tr><td>Data</td><td>Several trial loads</td><td>One rehearsal</td></tr><tr><td>Custom asks</td><td>In the plan</td><td>Change request, later phase</td></tr></table><p>Right-sizing means <b>keep every control, shrink the variability</b>.</p>`,Q:[
+{q:`Which change shortens a project without adding risk?`,o:[`Skip testing`,`Standardize scope and templates so fewer decisions are needed`,`Add people to every task`,`Shorten kickoff to zero`],a:1,e:`Fewer decisions means less waiting and fewer errors.`},
+{q:`What usually consumes time in long projects?`,o:[`Typing speed`,`Custom requirements, waiting on people and vendors, repeated data rounds`,`Logins`,`Meeting rooms`],a:1,e:`Waiting and variability, not effort.`},
+{q:`What stays non-negotiable in a fast track?`,o:[`Weekly steering meetings`,`Verifying data and integrations before launch`,`Custom reports`,`Long workshops`],a:1,e:`Controls stay. Ceremony shrinks.`}],why:`Right-size by removing variability and waiting, not by cutting verification.`},
+{g:"Foundation",t:"Where the time goes",ty:"tri",br:`Sort each activity: keep it, shrink or standardize it, or remove it from the fast track.`,C:["Keep","Shrink","Remove"],I:[
+{x:`Verify integration data before launch`,a:0,e:`Never cut. This is what prevents a failed go-live.`},
+{x:`Multi-week requirements workshops`,a:1,e:`Replace with a standard intake form plus one kickoff call.`},
+{x:`Custom report builds`,a:2,e:`Handle as a change request or later phase.`},
+{x:`Three trial data loads`,a:1,e:`One full rehearsal, reconciled.`},
+{x:`Rollback or pause plan`,a:0,e:`Cheap to write, costly to lack.`},
+{x:`Weekly steering committee`,a:2,e:`Use a short written status instead.`}],why:`Keep controls, shrink process, remove custom work from the base package.`},
+{g:"Foundation",t:"Intake before kickoff",ty:"multi",br:`Kickoff should confirm answers, not start the questions. Collect the basics <b>before</b> the call.`,pr:`Select the 4 items to collect before kickoff.`,I:[
+{x:`Which systems they run and who administers each`,c:1,e:`Defines integrations and who can approve access.`},
+{x:`Approval contacts for each integration`,c:1,e:`Approvals are usually the longest wait.`},
+{x:`Every report they might want in year one`,c:0,e:`Wish lists belong in a later phase.`},
+{x:`Go-live target and blackout dates`,c:1,e:`Exposes real constraints early.`},
+{x:`Which locations or accounts launch first`,c:1,e:`Sets the launch scope.`},
+{x:`Preferred brand colors`,c:0,e:`Not needed to launch.`},
+{x:`A full list of future features`,c:0,e:`Out of scope for the base package.`}],why:`Intake first, so kickoff is a confirmation call and day 1 is productive.`},
+{g:"Foundation",t:"Standard patterns",ty:"mc",br:`Fast timelines need <b>one standard setup per type of customer system</b>, a config template, and a checklist. Custom work is the exception and goes through change control.`,Q:[
+{q:`The customer's system has a supported standard connector. Best approach?`,o:[`Design a custom integration`,`Use the standard connector and template, document only the differences`,`Skip testing because it's standard`,`Build it later`],a:1,e:`Standard plus documented differences is fastest and safest.`},
+{q:`No standard connector exists, and the plan is 10 days. Best response?`,o:[`Promise it anyway`,`Flag it at kickoff: different timeline or phased scope, and the sponsor decides`,`Quietly extend the date`,`Drop the integration`],a:1,e:`Surface the trade-off early and let the sponsor choose.`},
+{q:`Why keep a configuration template?`,o:[`It looks professional`,`Fewer decisions, fewer errors, easier handoff`,`It replaces testing`,`It removes the customer's input`],a:1,e:`Repeatability is the speed.`}],why:`Standard first, custom by exception.`},
+{g:"Foundation",t:"Third parties set the pace",ty:"mc",br:`Your own tasks take hours. A third party's approval can take days. <b>Start the longest wait first</b> and run everything else in parallel.`,Q:[
+{q:`Day 1. A data feed needs the customer's vendor to approve it (often 2 to 5 days). First move?`,o:[`Configure branding`,`Submit the request now, then work in parallel`,`Wait for kickoff notes`,`Plan training`],a:1,e:`Longest dependency first.`},
+{q:`Day 5 of 10 and the approval is late. Best move?`,o:[`Say nothing`,`Escalate early with the go-live impact and options, such as launching part of the scope`,`Blame the vendor by email`,`Cancel`],a:1,e:`Escalate with options while there's still room.`},
+{q:`What can usually run while you wait?`,o:[`Go-live`,`Configuration, test scripts, data rules, admin training prep`,`Nothing`,`Final sign-off`],a:1,e:`Parallelize everything not blocked.`}],why:`Find the critical path, start it first, and escalate early.`},
+{g:"Foundation",t:"Right-sized data",ty:"mc",br:`Fast-track migration means loading only what the product needs: set a <b>history window</b> (for example 12 to 24 months), agree the mapping once, run <b>one full rehearsal</b>, reconcile, then the final load.`,Q:[
+{q:`The customer wants 10 years of history in a 10-day plan. Best response?`,o:[`Load it all`,`Agree a window for launch and offer older history as a later phase`,`Refuse`,`Load without checking`],a:1,e:`Protect launch, keep the door open.`},
+{q:`The rehearsal rejects 2% of rows. Next?`,o:[`Launch anyway`,`Find the cause, fix the rule, re-run, reconcile`,`Delete the rows`,`Ignore it`],a:1,e:`Rejected rows are mapping clues.`},
+{q:`Reconciliation in a fast track means…`,o:[`Counts only`,`Counts plus spot-checks of values and formats against source`,`Trusting the loader`,`Asking the customer to look`],a:1,e:`Equal counts can hide wrong values.`}],why:`Window, one mapping, one rehearsal, always reconcile.`},
+{g:"Foundation",t:"Test sequence",ty:"order",br:`A fast test plan is short but ordered: prove the connection, then the data, then the whole flow, then a failure case.`,o:["Confirm the connection receives data","Check key fields are mapped correctly","Run one end-to-end scenario with write-back","Test a failure case (missing or bad data)","Customer signs off the checklist","Launch"],perm:[3,0,5,2,4,1],why:`Connection, fields, end-to-end, failure, sign-off, launch.`},
+{g:"Foundation",t:"Minimum launch gates",ty:"multi",br:`A fast track still needs evidence of readiness. Tap the <b>4 gates</b> that must be met.`,pr:`Select the 4 launch gates.`,I:[
+{x:`Data is flowing and reconciled`,c:1,e:`Proof the data is right.`},
+{x:`One end-to-end test passed`,c:1,e:`Proof the flow works.`},
+{x:`Customer admin knows who to contact and how to escalate`,c:1,e:`Support is ready on day one.`},
+{x:`Rollback or pause plan agreed`,c:1,e:`Know what happens if launch fails.`},
+{x:`Every custom request delivered`,c:0,e:`Custom work goes through change control.`},
+{x:`Cosmetic polish finished`,c:0,e:`Track it for later.`},
+{x:`Every user fully trained`,c:0,e:`Admins first. Users can follow after launch.`}],why:`Gates are evidence: data, flow, support, and a way back.`},
+{g:"Foundation",t:"One-page handoff",ty:"mc",br:`Short projects hand off fast. A one-page <b>configuration summary</b> lets the next team support the customer without re-asking questions.`,Q:[
+{q:`What belongs on the summary?`,o:[`A thank-you note`,`Systems connected, settings chosen, contacts, test results, open items`,`Raw data files`,`Nothing`],a:1,e:`The next team needs the full picture.`},
+{q:`Open items at handoff should be…`,o:[`Hidden`,`Listed with an owner and a date`,`Left for the customer`,`Closed without checking`],a:1,e:`Visible, owned, dated.`}],why:`A clear summary prevents repeat questions.`},
+{g:"Tickets",t:"Ticket: Stalled approval",ty:"mc",br:`<b>Scenario:</b> Northside Group signed Monday. It's day 4 of 10 and the feed approval from their record-system vendor hasn't arrived. Go-live is day 10.`,Q:[
+{q:`First action?`,o:[`Wait`,`Chase the approval with the vendor contact and confirm who is blocking it`,`Move the date`,`Skip the integration`],a:1,e:`Find the real blocker.`},
+{q:`The vendor says "two more days". Best plan?`,o:[`Hope`,`Keep parallel work moving, set a decision point, and warn the sponsor of the risk and options`,`Cancel launch`,`Stop work`],a:1,e:`Plan around the delay and tell the sponsor early.`},
+{q:`Approval lands on day 8. What protects launch?`,o:[`Skip testing`,`Run the shortest test sequence, reconcile, then decide go or phased go`,`Launch untested`,`Redo discovery`],a:1,e:`Compress the steps, not the verification.`}],say:`I start the longest dependency first, keep parallel work moving, and escalate early with options.`,why:`Ticket done: approvals are the critical path.`},
+{g:"Tickets",t:"Ticket: Custom asks at kickoff",ty:"mc",br:`<b>Scenario:</b> On the kickoff call, the customer asks for a custom workflow and ten extra reports. The package is fixed at 10 days.`,Q:[
+{q:`Best response on the call?`,o:[`Say yes`,`Capture them, explain the base package, and offer a phase 2 estimate`,`Say no`,`Ignore them`],a:1,e:`Record the asks without derailing launch.`},
+{q:`The sponsor insists on one report before launch. What now?`,o:[`Build quietly`,`Log a change request with time and cost impact, and let the sponsor decide`,`Refuse`,`Add it for free`],a:1,e:`Change control gives a real choice.`},
+{q:`How do you keep the date safe?`,o:[`Cut testing`,`Launch the base scope on time and schedule the custom work after`,`Move the date`,`Work nights`],a:1,e:`Protect the launch, then deliver extras.`}],say:`I protect the launch with a fixed base package and route custom asks through change control.`,why:`Ticket done: log it, price it, phase it.`},
+{g:"Tickets",t:"Ticket: Test fails on day 9",ty:"mc",br:`<b>Scenario:</b> During the final test, new appointments don't write back to the customer's scheduler. Launch is tomorrow.`,Q:[
+{q:`First step?`,o:[`Launch anyway`,`Isolate where it fails: sent, received, or written back`,`Reinstall everything`,`Blame the scheduler vendor`],a:1,e:`Locate the failing hop first.`},
+{q:`You find a mapping field mismatch. Next?`,o:[`Guess a fix`,`Fix the mapping, re-run the end-to-end test, and record the result`,`Skip the retest`,`Hide it`],a:1,e:`Every fix gets re-verified.`},
+{q:`The fix needs the vendor and won't land until day 11. Decision?`,o:[`Launch broken`,`Tell the sponsor, offer a short delay or a phased launch without that feature`,`Say nothing`,`Cancel the contract`],a:1,e:`Evidence over hope. Give options early.`}],say:`I isolate the failing step, fix and retest, and give the sponsor clear options if the date is at risk.`,why:`Ticket done: isolate, fix, retest, communicate.`},
+{g:"Review",t:"Flashcards",ty:"fc",br:`Say the answer aloud first, then tap to flip.`,F:[
+{f:`Why can fast projects be safe?`,b:`Fixed scope, standard steps, unknowns removed before kickoff, controls kept.`},
+{f:`What do you keep in a fast track?`,b:`Data verification, an end-to-end test, a rollback plan, and support contacts.`},
+{f:`What do you shrink?`,b:`Workshops to intake plus one call, trial loads to one rehearsal, steering to written status.`},
+{f:`What do you remove?`,b:`Custom builds from the base package. They become change requests or phase 2.`},
+{f:`What's the critical path?`,b:`Usually third-party approvals. Start them on day 1.`},
+{f:`How do you size a history load?`,b:`Agree a window for launch, offer older data later.`},
+{f:`When do you escalate?`,b:`When a risk threatens the date and you can't fix it at your level, early, with options.`},
+{f:`What goes in the handoff?`,b:`Systems, settings, contacts, test results, and open items with owners and dates.`}],why:`If you can say these cold, you can explain right-sizing in any interview.`}];
+let S={xp:0,done:{}};try{S=JSON.parse(localStorage.getItem(KEY))||S}catch(e){}
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}},$=id=>document.getElementById(id),A=$("app");
+let cur=0,won=false,mi=0,msc=0,fi=0,sel=new Set(),pl=[],ch=[];
+function home(){const n=Object.keys(S.done).length;let h=`<div class=top><h1>Fast-Track Implementation Lab</h1><span class=xp>⚡ ${S.xp} XP</span></div><div class=mu>How to right-size an implementation from months to days or weeks without cutting the controls. ${n} of ${M.length} missions done.</div>`;
+let last="";M.forEach((m,i)=>{if(m.g!=last){h+=`<div class=day>${m.g}</div>`;last=m.g}h+=`<div class="card les ${S.done[i]?"done":""}" onclick="openM(${i})"><div class=dot>${S.done[i]?"✓":i+1}</div><div><b>${m.t}</b></div></div>`});
+h+=`<button class=g onclick="if(confirm('Reset progress?')){S={xp:0,done:{}};save();home()}">Reset progress</button>`;A.innerHTML=h}
+function openM(i){if(i>=M.length)return home();cur=i;won=false;mi=0;msc=0;fi=0;sel=new Set();pl=[];ch=[];const m=M[i];
+let h=`<button class=back onclick="home()">← Missions</button><h2>${m.t}</h2><div class=card>${m.br}</div>`;
+if(m.ty=="order")h+=`<div class=card><div class=mu>Tap the steps in the order they happen.</div><div id=pl></div><div id=ol></div><div id=fb></div></div>`;
+else if(m.ty=="multi")h+=`<div class=card><div class=mu>${m.pr}</div>${m.I.map((it,k)=>`<button class=opt id=i${k} onclick="tg(${k})">${it.x}</button>`).join("")}<button onclick="ckm()">Check</button><div id=fb></div></div>`;
+else if(m.ty=="tri")h+=`<div class=card>${m.I.map((it,k)=>`<div class=f>${it.x}<div class=cats>${m.C.map((c,j)=>`<button class=g id=c${k}_${j} onclick="tr(${k},${j})">${c}</button>`).join("")}</div></div>`).join("")}<button onclick="ckt()">Check</button><div id=fb></div></div>`;
+else h+=`<div id=mq></div>`;
+A.innerHTML=h+`<div id=win></div>`;if(m.ty=="order")ord();if(m.ty=="mc")mq();if(m.ty=="fc")fcs()}
+function ord(){const m=M[cur];$("pl").innerHTML=pl.map((j,k)=>`<div class=pl>${k+1}. ${m.o[j]}</div>`).join("");
+$("ol").innerHTML=m.perm.filter(j=>!pl.includes(j)).map(j=>`<button class=opt onclick="po(${j})">${m.o[j]}</button>`).join("");if(pl.length==m.o.length)win()}
+function po(j){if(j==pl.length){pl.push(j);$("fb").innerHTML="";ord()}else $("fb").innerHTML=`<div class=fb>Not yet. What has to happen before that step?</div>`}
+function tg(k){sel.has(k)?sel.delete(k):sel.add(k);$("i"+k).classList.toggle("sel")}
+function ckm(){const m=M[cur];let ok=true,o="";m.I.forEach((it,k)=>{const s=sel.has(k),c=!!it.c;if(s!=c)ok=false;o+=`<div>${s&&c?"✅ Right:":s?"❌ Shouldn't be selected:":c?"⚠ Missed:":"✓ Correctly left out:"} ${it.e}</div>`});
+$("fb").innerHTML=`<div class=fb>${o}${ok?"":"<div><b>Adjust and check again.</b></div>"}</div>`;if(ok)win()}
+function tr(k,j){ch[k]=j;M[cur].C.forEach((c,x)=>$(`c${k}_${x}`).classList.toggle("sel",x==j))}
+function ckt(){const m=M[cur];if(m.I.some((_,k)=>ch[k]==null)){$("fb").innerHTML=`<div class=fb>Pick a category for every item.</div>`;return}
+let ok=true,o="";m.I.forEach((it,k)=>{const r=ch[k]==it.a;if(!r)ok=false;o+=`<div>${r?"✅":"❌"} ${r?"":"Should be "+m.C[it.a]+". "}${it.e}</div>`});
+$("fb").innerHTML=`<div class=fb>${o}${ok?"":"<div><b>Adjust and check again.</b></div>"}</div>`;if(ok)win()}
+function mq(){const m=M[cur];if(mi>=m.Q.length){$("mq").innerHTML=`<div class=card>You got ${msc}/${m.Q.length}.</div>`;return win()}
+const q=m.Q[mi];$("mq").innerHTML=`<div class=card><h2>${q.q}</h2>${q.o.map((o,k)=>`<button class=opt onclick="mp(${k},this)">${o}</button>`).join("")}<div id=fb></div></div>`}
+function mp(k,el){const q=M[cur].Q[mi];if(document.querySelector(".opt.ok,.opt.no"))return;const ok=k==q.a;if(ok)msc++;el.classList.add(ok?"ok":"no");
+if(!ok)document.querySelectorAll(".opt")[q.a].classList.add("ok");$("fb").innerHTML=`<div class=fb>${ok?"✅ Correct.":"❌ Not quite."} ${q.e}</div><button onclick="mi++;mq()">Next</button>`}
+function fcs(){const m=M[cur];if(fi>=m.F.length){$("mq").innerHTML=`<div class=card>Deck done.</div>`;return win()}const c=m.F[fi];
+$("mq").innerHTML=`<div class=card style="cursor:pointer" onclick="$('bk').hidden=false"><div class=mu>Card ${fi+1}/${m.F.length}. Answer aloud, then tap to flip.</div><h2>${c.f}</h2><div id=bk hidden><b>${c.b}</b></div></div><button onclick="fi++;fcs()">Next card</button>`}
+function win(){if(won)return;won=true;const first=!S.done[cur];if(first){S.done[cur]=1;S.xp+=50}save();const m=M[cur];
+$("win").innerHTML=`<div class="card win"><b>✅ Mission complete!${first?" +50 XP":""}</b><p>${m.why}</p>${m.say?`<div class=say>🎤 Say it in the interview: ${m.say}</div>`:""}<button onclick="openM(${cur+1})">${cur+1<M.length?"Next mission":"Back to missions"}</button></div>`;$("win").scrollIntoView({behavior:"smooth"})}
+home();
+</script></body></html>
