@@ -39,24 +39,24 @@ const L=[
 [`A field is a name plus a value`,`In mapping, every field has a column name and a cell value. JSON is exactly that, written as text:<pre>"firstName": "Dana"</pre>The left side is the <b>key</b> (the column header). The right side is the <b>value</b> (the cell).`],
 [`Object = one record`,`Curly braces hold one record, like one spreadsheet row:<pre>{\n "firstName": "Dana",\n "phone": "856-555-0142"\n}</pre>Pairs are <code>"key": value</code>, separated by commas.`],
 [`Array = a list of records`,`Square brackets hold a list, like the whole table:<pre>[\n {"firstName":"Dana"},\n {"firstName":"Luis"}\n]</pre>APIs often return an array of objects when you ask for many records.`],
-[`Why not just CSV?`,`CSV is flat: one row, fixed columns. JSON can <b>nest</b>: a customer can contain a vehicle, which contains a make and year. That nesting is why mapping tools need paths, which we cover in lesson 3.`],
+[`Why not just CSV?`,`CSV is flat: one row, fixed columns. JSON can <b>nest</b>: a contact can contain an order, which contains an item with a name and quantity. That nesting is why mapping tools need paths, which we cover in lesson 3.`],
 {q:`In field-mapping terms, a JSON object is most like…`,o:[`One record (a row)`,`A whole database`,`A single cell`,`A column header`],a:0,e:`An object is one record. The array is the list of them.`},
 {q:`<code>[ {...}, {...}, {...} ]</code> contains how many records?`,o:[`1`,`2`,`3`,`Can't tell`],a:2,e:`An array of three objects is three records.`},
 {q:`In <code>"phone": "856-555-0142"</code>, <code>"phone"</code> is the…`,o:[`Value`,`Key`,`Array`,`Record`],a:1,e:`Key = the field name. Value = the data.`}]},
 {d:"Foundations",t:"Data types",s:[
 [`Six types`,`<table><tr><td><b>string</b></td><td>Text in double quotes: <code>"Dana"</code></td></tr><tr><td><b>number</b></td><td>No quotes: <code>2022</code>, <code>19.99</code></td></tr><tr><td><b>boolean</b></td><td><code>true</code> or <code>false</code>, lowercase, no quotes</td></tr><tr><td><b>null</b></td><td>Explicitly "no value"</td></tr><tr><td><b>object</b></td><td><code>{ ... }</code></td></tr><tr><td><b>array</b></td><td><code>[ ... ]</code></td></tr></table>`],
-[`Quotes change the meaning`,`<code>"year": 2022</code> is a number. <code>"year": "2022"</code> is text. Many destinations reject the wrong one. The rule of thumb: if you won't do math on it, make it a <b>string</b>: phone numbers, ZIP codes, VINs, IDs. A ZIP stored as a number loses its leading zero (<code>08028</code> becomes <code>8028</code>).`],
+[`Quotes change the meaning`,`<code>"quantity": 2</code> is a number. <code>"quantity": "2"</code> is text. Many destinations reject the wrong one. The rule of thumb: if you won't do math on it, make it a <b>string</b>: phone numbers, ZIP codes, account numbers, IDs. A ZIP stored as a number loses its leading zero (<code>08028</code> becomes <code>8028</code>).`],
 [`Three kinds of "nothing"`,`<pre>"email": null      // no value\n"email": ""        // empty text\n(email omitted)    // not mentioned at all</pre>These can behave differently. Sending an empty value can <i>erase</i> existing data, while leaving the field out may leave it untouched.`],
-{q:`Which is a number?`,o:[`<code>"year": "2022"</code>`,`<code>"year": 2022</code>`,`<code>"year": '2022'</code>`,`<code>"year": two</code>`],a:1,e:`Numbers have no quotes.`},
+{q:`Which is a number?`,o:[`<code>"quantity": "2"</code>`,`<code>"quantity": 2</code>`,`<code>"quantity": '2'</code>`,`<code>"quantity": two</code>`],a:1,e:`Numbers have no quotes.`},
 {q:`How should a ZIP code like 08028 be stored?`,o:[`Number`,`String`,`Boolean`,`Null`],a:1,e:`Strings preserve leading zeros.`},
 {q:`Sending <code>"email": ""</code> in an update may…`,o:[`Do nothing`,`Overwrite an existing email with blank`,`Delete the record`,`Add a second email`],a:1,e:`Empty values can overwrite data. Test before assuming.`}]},
 {d:"Foundations",t:"Nesting and paths",s:[
-[`Objects inside objects`,`<pre>{\n "firstName":"Dana",\n "vehicle":{\n  "make":"Honda",\n  "model":"CR-V"\n }\n}</pre>The model lives at <b>vehicle → model</b>. Most tools write that path with a dot: <code>vehicle.model</code>.`],
+[`Objects inside objects`,`<pre>{\n "firstName":"Dana",\n "item":{\n  "name":"Standing desk",\n  "quantity":2\n }\n}</pre>The name lives at <b>item → name</b>. Most tools write that path with a dot: <code>item.name</code>.`],
 [`Arrays and index numbers`,`<pre>"phones":[\n {"type":"home","number":"555-0100"},\n {"type":"mobile","number":"555-0142"}\n]</pre>Counting starts at <b>0</b>. The first phone is <code>phones[0].number</code>, the second is <code>phones[1].number</code>.`],
-[`Flattening for the destination`,`Your destination probably has flat fields. Mapping flattens them:<table><tr><td><code>firstName</code></td><td>→ First Name</td></tr><tr><td><code>vehicle.model</code></td><td>→ Vehicle Interest</td></tr><tr><td><code>phones[1].number</code></td><td>→ Mobile</td></tr></table>Exact path syntax varies by tool. Check its documentation.`],
-{q:`Path to the make in the example above?`,o:[`<code>make</code>`,`<code>vehicle.make</code>`,`<code>vehicle[make]</code>`,`<code>make.vehicle</code>`],a:1,e:`Follow the nesting from outside in.`},
+[`Flattening for the destination`,`Your destination probably has flat fields. Mapping flattens them:<table><tr><td><code>firstName</code></td><td>→ First Name</td></tr><tr><td><code>item.name</code></td><td>→ Product Interest</td></tr><tr><td><code>phones[1].number</code></td><td>→ Mobile</td></tr></table>Exact path syntax varies by tool. Check its documentation.`],
+{q:`Path to the quantity in the example above?`,o:[`<code>quantity</code>`,`<code>item.quantity</code>`,`<code>item[quantity]</code>`,`<code>quantity.item</code>`],a:1,e:`Follow the nesting from outside in.`},
 {q:`Which index is the first item in an array?`,o:[`1`,`0`,`-1`,`first`],a:1,e:`Arrays are zero-indexed.`},
-{q:`A customer has 2 phones but the destination has one Phone field. What do you ask first?`,o:[`Delete one`,`Which one should be the primary?`,`Nothing, use the first`,`Change the API`],a:1,e:`Mapping many-to-one needs a business rule.`}]},
+{q:`A contact has 2 phones but the destination has one Phone field. What do you ask first?`,o:[`Delete one`,`Which one should be the primary?`,`Nothing, use the first`,`Change the API`],a:1,e:`Mapping many-to-one needs a business rule.`}]},
 {d:"Foundations",t:"Syntax rules and typos",s:[
 [`The five rules`,`1) Keys use <b>double quotes</b>. 2) Strings use <b>double quotes</b>. 3) Commas <b>between</b> items, never after the last. 4) Every <code>{</code> <code>[</code> needs its closing match. 5) <b>No comments.</b> Also, keys are case-sensitive: <code>firstName</code> and <code>FirstName</code> differ.`],
 [`What really breaks files`,`Trailing commas after the last item. Single quotes. Smart quotes (“ ”) pasted from Word, Slack, or Excel. A missing comma between fields. A quote inside text without escaping (use <code>\\"</code>). Extra text before or after the braces.`],
@@ -69,26 +69,26 @@ T(`Sync fails right after a mapping edit`,`A teammate hand-edited the mapping fi
 {q:`What does a 400 with "unexpected token" tell you?`,o:[`Auth failure`,`The JSON is malformed`,`Server crash`,`Rate limit`],a:1,e:`400 = bad request. Here the JSON itself can't be parsed.`},
 {q:`What's the cause?`,o:[`Wrong key`,`Trailing comma after the last mapping`,`Missing quotes`,`Nesting`],a:1,e:`The comma after the final object is invalid JSON.`},
 {q:`Best prevention?`,o:[`Never edit mappings`,`Validate the file before saving or deploying`,`Add comments`,`Use single quotes`],a:1,e:`Make validation part of every hand-edit.`},
-[`Say it in the interview`,`"A 400 with a position number pointed to malformed JSON. I validated the file, found a trailing comma, and now I validate before every deploy."`]]},
+[`How to explain it`,`A 400 with a position number points to malformed JSON. Validate the file, look for a trailing comma, and validate again before each deploy.`]]},
 {d:"Tickets",t:"Ticket 2: Wrong data type",s:[
-T(`Vehicles rejected, and ZIPs look wrong`,`<pre>HTTP/1.1 422 Unprocessable Entity\n{"error":"vehicle.year must be a number"}</pre>Payload:<pre>{"vehicle":{"year":"2022"},\n "zip":8028}</pre>Dealer also says: "Some ZIP codes lost their leading zero."`),
-{q:`Why the 422?`,o:[`Missing field`,`<code>year</code> is text; destination wants a number`,`Bad key`,`Server down`],a:1,e:`Valid JSON but wrong type for that field.`},
+T(`Orders rejected, and ZIPs look wrong`,`<pre>HTTP/1.1 422 Unprocessable Entity\n{"error":"item.quantity must be a number"}</pre>Payload:<pre>{"item":{"quantity":"2"},\n "zip":8028}</pre>The customer also says: "Some ZIP codes lost their leading zero."`),
+{q:`Why the 422?`,o:[`Missing field`,`<code>quantity</code> is text; destination wants a number`,`Bad key`,`Server down`],a:1,e:`Valid JSON but wrong type for that field.`},
 {q:`Where do you fix the ZIP issue?`,o:[`Ignore it`,`Treat ZIP as a string at the source/import and mapping`,`Convert to boolean`,`Delete them`],a:1,e:`Leading zeros disappear when ZIPs are stored as numbers, often via Excel. Keep them text.`},
-{q:`After fixing, how do you check?`,o:[`Assume`,`Test records, including a ZIP that starts with 0, and verify in the destination`,`Ask the dealer`,`Clear the cache`],a:1,e:`Test the edge case, not just the easy one.`},
-[`Say it in the interview`,`"A 422 on a valid payload means a validation rule. The year was text, so I converted the type, and I kept ZIPs as strings so leading zeros survive."`]]},
+{q:`After fixing, how do you check?`,o:[`Assume`,`Test records, including a ZIP that starts with 0, and verify in the destination`,`Ask the customer`,`Clear the cache`],a:1,e:`Test the edge case, not just the easy one.`},
+[`How to explain it`,`A 422 on a valid payload points to a validation rule. The quantity was text, so convert the type, and keep ZIPs as strings so leading zeros survive.`]]},
 {d:"Tickets",t:"Ticket 3: Emails vanished",s:[
-T(`Customers lost their email addresses`,`After a nightly update, many customers have blank emails. The update payload:<pre>PATCH /customers/310\n{"phone":"856-555-0142",\n "email":""}</pre>The source system has no email for that customer, but the destination did.`),
+T(`Contacts lost their email addresses`,`After a nightly update, many contacts have blank emails. The update payload:<pre>PATCH /contacts/310\n{"phone":"856-555-0142",\n "email":""}</pre>The source system has no email for that contact, but the destination did.`),
 {q:`What likely happened?`,o:[`The key expired`,`The empty string overwrote the existing email`,`Pagination`,`Rate limit`],a:1,e:`The source's blank value was sent and replaced real data.`},
 {q:`Best fix?`,o:[`Send nulls instead`,`Omit blank fields from updates (or follow the API's documented rule for clearing)`,`Send more fields`,`Stop syncing`],a:1,e:`Only send fields that have values, unless the API says null clears them.`},
-{q:`Recovery step?`,o:[`Nothing`,`Restore emails from backup or the other system, and verify counts`,`Ask customers`,`Delete records`],a:1,e:`Recover from a trusted source, then reconcile.`},
-[`Say it in the interview`,`"Blank source values overwrote good data. I changed the mapping to skip empty fields, restored from backup, and reconciled before closing."`]]},
+{q:`Recovery step?`,o:[`Nothing`,`Restore emails from backup or the other system, and verify counts`,`Ask contacts`,`Delete records`],a:1,e:`Recover from a trusted source, then reconcile.`},
+[`How to explain it`,`Blank source values overwrote good data. Change the mapping to skip empty fields, restore from backup, and reconcile before closing.`]]},
 {d:"Tickets",t:"Ticket 4: Wrong phone type",s:[
-T(`Mobile numbers landing in the Home field`,`Payload:<pre>"phones":[\n {"type":"home","number":"555-0100"},\n {"type":"mobile","number":"555-0142"}\n]</pre>Mapping: <code>phones[0].number → mobile</code>. Some customers only have one phone, and some have none.`),
+T(`Mobile numbers landing in the Home field`,`Payload:<pre>"phones":[\n {"type":"home","number":"555-0100"},\n {"type":"mobile","number":"555-0142"}\n]</pre>Mapping: <code>phones[0].number → mobile</code>. Some contacts only have one phone, and some have none.`),
 {q:`Why is the wrong number in Mobile?`,o:[`Typo`,`The mapping uses position, and order isn't guaranteed`,`Auth`,`Case sensitivity`],a:1,e:`Index-based paths break when order changes.`},
 {q:`Better approach?`,o:[`Use <code>phones[1]</code>`,`Select the phone where <code>type</code> is "mobile"`,`Use the last one`,`Skip phones`],a:1,e:`Choose by a stable attribute, not position.`},
-{q:`Edge case to test?`,o:[`Customers with one phone, or none (empty array)`,`Only perfect records`,`Uppercase names`,`Long names`],a:0,e:`Missing items cause errors or blanks. Test the empties.`},
-[`Say it in the interview`,`"I'd avoid position-based paths for arrays and select by type, then test one-phone and zero-phone customers."`]]},
-{d:"Interview",t:"Rapid-fire flashcards",fc:[
+{q:`Edge case to test?`,o:[`Contacts with one phone, or none (empty array)`,`Only perfect records`,`Uppercase names`,`Long names`],a:0,e:`Missing items cause errors or blanks. Test the empties.`},
+[`How to explain it`,`Avoid position-based paths for arrays. Select by type, then test one-phone and zero-phone contacts.`]]},
+{d:"Review",t:"Rapid-fire flashcards",fc:[
 [`JSON vs CSV?`,`CSV is flat rows and columns. JSON is key-value pairs that can nest objects and arrays.`],
 [`JSON vs XML?`,`Both structure data. JSON is lighter and more common in modern APIs. XML uses tags and is older.`],
 [`Is this valid? {"a":1,}`,`No. A trailing comma is invalid.`],
@@ -97,8 +97,8 @@ T(`Mobile numbers landing in the Home field`,`Payload:<pre>"phones":[\n {"type":
 [`What is a schema?`,`A definition of expected fields, types, and required values, used to validate JSON.`],
 [`How do you validate JSON?`,`Paste it into a validator/formatter or an editor like VS Code. Fix the flagged line.`],
 [`Date format gotcha?`,`Destinations often want ISO format, like 2026-10-04. A value like 10/04/2026 can fail or be misread.`],
-[`Question: how comfortable are you with JSON?`,`Honest answer: strong reading and mapping skills; I validate edits, watch types and nulls, and trace one record when something breaks.`],
-[`Ask them`,`What do your mapping files look like? What JSON issues come up most in dealer setups? How do you validate changes before they go live?`]]}
+[`A customer asks: why did my JSON fail to load?`,`Check the error message and position first. Common causes are a trailing comma, single quotes, smart quotes, or a missing bracket. Validate the file, fix the flagged line, and test one record.`],
+[`Questions to ask a customer during setup`,`What do your mapping files look like? Which fields are nested? How are blank values handled on updates? How are changes validated before they go live?`]]}
 ];
 let S={xp:0,done:{}};try{S=JSON.parse(localStorage.getItem(KEY))||S}catch(e){}
 const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
