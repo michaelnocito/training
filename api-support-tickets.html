@@ -31,49 +31,49 @@ code{padding:1px 5px}pre{padding:10px;overflow-x:auto;margin:8px 0}
 .back{background:none;color:var(--mu);width:auto;padding:4px 0;margin:0}
 </style></head><body><div id="app"></div>
 <script>
-const TITLE="API Support Tickets",SUB="Part 2: realistic setup and troubleshooting scenarios. Read the evidence, make the call, and see the reasoning. The dealers and data are fictional but the patterns are common in SaaS integrations.",KEY="apiScn";
+const TITLE="API Support Tickets",SUB="Part 2: realistic setup and troubleshooting scenarios. Read the evidence, make the call, and see the reasoning. The customers and data are fictional, but the patterns are common in SaaS integrations.",KEY="apiScn";
 const T=(h,b)=>["🎫 "+h,b,1];
 const L=[
 {d:"Data tickets",t:"Ticket 1: Blank fields",s:[
-T("Hillside Honda: leads arrive but are half empty",`<i>\"Web leads show up in our CRM with a name, but the phone and vehicle are blank.\"</i><br>Log:<pre>POST /v1/leads → 201 Created</pre>Source payload:<pre>{\"first_name\":\"Dana\",\"last_name\":\"Ortiz\",\n \"cell\":\"856-555-0142\",\n \"vehicle\":{\"model\":\"CR-V\"}}</pre>Mapping:<pre>{\"first_name\":\"firstName\",\n \"last_name\":\"lastName\",\n \"phone\":\"phone\",\n \"vehicle_interest\":\"interest\"}</pre>`),
+T("Hillside Supply: leads arrive but are half empty",`<i>\"Web leads show up in our CRM with a name, but the phone and product interest are blank.\"</i><br>Log:<pre>POST /v1/leads → 201 Created</pre>Source payload:<pre>{\"first_name\":\"Dana\",\"last_name\":\"Ortiz\",\n \"cell\":\"856-555-0142\",\n \"item\":{\"name\":\"Standing desk\"}}</pre>Mapping:<pre>{\"first_name\":\"firstName\",\n \"last_name\":\"lastName\",\n \"phone\":\"phone\",\n \"product_interest\":\"interest\"}</pre>`),
 {q:"The call returned 201. What does that tell you?",o:["Auth is broken","The call worked, so the issue is the data/mapping","The server is down","The endpoint is wrong"],a:1,e:"2xx means transport and auth succeeded. Records exist, but fields are missing, a mapping symptom."},
-{q:"Why are phone and vehicle blank?",o:["The mapping looks for <code>phone</code> and <code>vehicle_interest</code>, but the source sends <code>cell</code> and nested <code>vehicle.model</code>","The key expired","The dealer typed it wrong","Rate limiting"],a:0,e:"Source field names and structure don't match the mapping's source keys, so nothing is picked up."},
-["The fix","Map the real source names and handle nesting:<pre>\"cell\" → \"phone\"\n\"vehicle.model\" → \"interest\"</pre>The nesting syntax depends on the tool. Check its docs."],
-{q:"Best next step after fixing the mapping?",o:["Tell the dealer it's fixed","Send one new test lead, verify every field, then backfill the blank ones","Delete all leads","Change the API key"],a:1,e:"Prove it with one record end to end before you announce a fix. Then repair the history."},
-["Say it in the interview","\"A 201 told me the connection was fine, so I compared the source payload to the mapping for one record and found two mismatched fields. I fixed it, tested a new lead, then backfilled.\""]]},
+{q:"Why are phone and interest blank?",o:["The mapping looks for <code>phone</code> and <code>product_interest</code>, but the source sends <code>cell</code> and nested <code>item.name</code>","The key expired","The customer typed it wrong","Rate limiting"],a:0,e:"Source field names and structure don't match the mapping's source keys, so nothing is picked up."},
+["The fix","Map the real source names and handle nesting:<pre>\"cell\" → \"phone\"\n\"item.name\" → \"interest\"</pre>The nesting syntax depends on the tool. Check its docs."],
+{q:"Best next step after fixing the mapping?",o:["Tell the customer it's fixed","Send one new test lead, verify every field, then backfill the blank ones","Delete all leads","Change the API key"],a:1,e:"Prove it with one record end to end before you announce a fix. Then repair the history."},
+["How to explain it","A 201 means the connection was fine. Compare the source payload to the mapping for one record, fix the mismatched fields, test with a new lead, then backfill the blank ones."]]},
 {d:"Data tickets",t:"Ticket 2: Duplicates",s:[
-T("Lakeview Motors: every customer appears twice","After a network blip during a sync, the dealer sees pairs of identical customers.<pre>POST /customers      → (timeout, no response)\nPOST /customers      → 201 id 8841 (retry)\n-- later --\nid 8840 also exists (first request succeeded)</pre>"),
+T("Lakeview Services: every contact appears twice","After a network blip during a sync, the customer sees pairs of identical contacts.<pre>POST /contacts       → (timeout, no response)\nPOST /contacts       → 201 id 8841 (retry)\n-- later --\nid 8840 also exists (first request succeeded)</pre>"),
 {q:"What happened?",o:["The server randomly copied data","A timed-out POST actually succeeded, then the retry created a second record","The mapping is wrong","The key expired"],a:1,e:"A timeout means \"no answer\", not \"it failed\". The first create had actually landed."},
-{q:"Best prevention?",o:["Never retry","Use idempotency keys, or look up/match before create (email, phone, VIN) and upsert","Retry faster","Use GET for creates"],a:1,e:"Make create operations safe to repeat, or check for an existing record first."},
+{q:"Best prevention?",o:["Never retry","Use idempotency keys, or look up/match before create (email, phone, account number) and upsert","Retry faster","Use GET for creates"],a:1,e:"Make create operations safe to repeat, or check for an existing record first."},
 {q:"A 409 Conflict on create usually means…",o:["Server crash","A record with that unique value already exists","Bad key","Rate limit"],a:1,e:"409 says the request conflicts with current state, often a duplicate."},
-{q:"Cleanup approach?",o:["Delete everything","Pick the survivor record, back up first, merge or remove duplicates, then verify counts","Ignore them","Ask the dealer to delete manually"],a:1,e:"Back up, decide a survivor rule, and verify. Careless deletes cause bigger problems."},
-["Say it in the interview","\"I treat a timeout as unknown, not failed. I check whether the record exists before retrying, and I'd recommend matching on a unique field.\""]]},
-{d:"Data tickets",t:"Ticket 3: Missing vehicles",s:[
-T("Riverside Auto: inventory shows 100 cars, they have 1,450","<pre>GET /v1/vehicles → 200 OK\n{\n \"total\": 1450,\n \"count\": 100,\n \"next\": \"/v1/vehicles?page=2\",\n \"data\": [ ... ]\n}</pre>"),
+{q:"Cleanup approach?",o:["Delete everything","Pick the survivor record, back up first, merge or remove duplicates, then verify counts","Ignore them","Ask the customer to delete manually"],a:1,e:"Back up, decide a survivor rule, and verify. Careless deletes cause bigger problems."},
+["How to explain it","Treat a timeout as unknown, not failed. Check whether the record exists before retrying, and match on a unique field."]]},
+{d:"Data tickets",t:"Ticket 3: Missing records",s:[
+T("Northfield Supply: product list shows 100 items, they have 1,450","<pre>GET /v1/products → 200 OK\n{\n \"total\": 1450,\n \"count\": 100,\n \"next\": \"/v1/products?page=2\",\n \"data\": [ ... ]\n}</pre>"),
 {q:"What clues explain the gap?",o:["Status 200","<code>total</code> 1450 vs <code>count</code> 100, and a <code>next</code> link","The data array","Nothing"],a:1,e:"The API is paginated. It sends one page and tells you where the rest is."},
 {q:"Correct fix?",o:["Ask for a bigger server","Loop: fetch each page, follow <code>next</code> until it's empty","Call page 1 repeatedly","Increase the timeout"],a:1,e:"Follow the pagination until it ends, respecting rate limits."},
-{q:"How do you prove you got everything?",o:["Eyeball it","Compare destination record count to the source <code>total</code>","Trust the 200","Ask the dealer"],a:1,e:"Reconcile counts. It's the same discipline as migration sign-off."},
-["Say it in the interview","\"A 200 with count 100 and total 1,450 pointed to pagination. I'd loop on the next link and reconcile counts to total before closing the ticket.\""]]},
+{q:"How do you prove you got everything?",o:["Eyeball it","Compare destination record count to the source <code>total</code>","Trust the 200","Ask the customer"],a:1,e:"Reconcile counts. It's the same discipline as migration sign-off."},
+["How to explain it","A 200 with count 100 and total 1,450 points to pagination. Loop on the next link, then reconcile counts to total before closing the ticket."]]},
 {d:"Access and load tickets",t:"Ticket 4: Monday morning 401s",s:[
 T("Everything failed overnight","The sync worked all last week. Now:<pre>HTTP/1.1 401 Unauthorized\n{\"error\":\"invalid_token\",\n \"message\":\"The access token expired\"}</pre>"),
 {q:"Category of problem?",o:["Mapping","Authentication","Rate limit","Pagination"],a:1,e:"401 plus 'token expired' is plainly auth."},
 {q:"First action?",o:["Rewrite all mappings","Check the refresh-token flow and request a new access token","Delete the integration","Switch to POST"],a:1,e:"Access tokens are short-lived by design. Refresh them before anything else."},
-["Plot twist","The refresh attempt returns:<pre>400 {\"error\":\"invalid_grant\"}</pre>The dealer's admin who authorized the connection left and her account was deactivated."],
-{q:"What now?",o:["Retry the refresh nightly","Have an active admin re-authorize the connection, ideally via a dedicated service account","Reset the dealer's CRM","Ignore it"],a:1,e:"The grant is dead. A person's departure shouldn't break integrations, so use a service account."},
-["Say it in the interview","\"I confirmed it was auth, tried the refresh flow, found the authorizing user was deactivated, and recommended a service account so it doesn't depend on one person.\""]]},
+["Plot twist","The refresh attempt returns:<pre>400 {\"error\":\"invalid_grant\"}</pre>The customer's admin who authorized the connection left and her account was deactivated."],
+{q:"What now?",o:["Retry the refresh nightly","Have an active admin re-authorize the connection, ideally via a dedicated service account","Reset the customer's CRM","Ignore it"],a:1,e:"The grant is dead. A person's departure shouldn't break integrations, so use a service account."},
+["How to explain it","Confirm it is an auth problem, try the refresh flow, and check whether the authorizing user is still active. Recommend a service account so the connection doesn't depend on one person."]]},
 {d:"Access and load tickets",t:"Ticket 5: Go-live rate limit",s:[
-T("Go-live day: loading 12,000 customers","Around record 600, errors start:<pre>HTTP/1.1 429 Too Many Requests\nRetry-After: 30</pre>"),
+T("Go-live day: loading 12,000 contacts","Around record 600, errors start:<pre>HTTP/1.1 429 Too Many Requests\nRetry-After: 30</pre>"),
 {q:"Meaning of 429?",o:["Bad credentials","You're sending requests faster than allowed","Server crashed","Wrong URL"],a:1,e:"Rate limit exceeded."},
 {q:"Best response?",o:["Retry instantly in a loop","Honor Retry-After, slow the pace, batch, and use backoff","Restart from record 1","Give up"],a:1,e:"Respect the limit. Retrying aggressively makes it worse."},
-{q:"After the load, how do you finish properly?",o:["Assume all 12,000 loaded","Reconcile counts, review the failed list, re-run only failures","Re-run everything","Ask the dealer to check"],a:1,e:"Re-running everything creates duplicates. Reconcile and retry just the failures."},
-["Say it in the interview","\"I'd throttle to the documented limit, honor Retry-After, log failures, and reconcile counts to the source before sign-off. That's the same approach I used on large migrations.\""]]},
-{d:"Onboarding and interview",t:"Ticket 6: Onboard a new dealer",s:[
-T("New dealer, first integration","You're the Technical Setup Specialist. Dealer wants their CRM connected to the platform by Friday."),
+{q:"After the load, how do you finish properly?",o:["Assume all 12,000 loaded","Reconcile counts, review the failed list, re-run only failures","Re-run everything","Ask the customer to check"],a:1,e:"Re-running everything creates duplicates. Reconcile and retry just the failures."},
+["How to explain it","Throttle to the documented limit, honor Retry-After, log failures, and reconcile counts to the source before sign-off."]]},
+{d:"Onboarding",t:"Ticket 6: Onboard a new customer",s:[
+T("New customer, first integration","You're an implementation analyst. The customer wants their CRM connected to the platform by Friday."),
 {q:"First move?",o:["Turn it on","Gather requirements and credentials, and confirm sandbox vs production","Call support","Skip to mapping"],a:1,e:"Know what's connecting, which environment, and who owns the credentials."},
-{q:"Before go-live?",o:["Nothing, just flip the switch","Test one record end to end, confirm the mapping with the dealer, and run UAT","Send the invoice","Wait a week"],a:1,e:"Test, get mapping sign-off, then UAT. It's the standard implementation playbook"},
-{q:"After go-live?",o:["Done","Monitor errors for the first 24 to 48 hours, check in with the dealer, and document the setup","Delete logs","Turn off alerts"],a:1,e:"Early monitoring catches issues before the customer does."},
-["Say it in the interview","\"I'd credential, test in sandbox, validate with one record, get mapping sign-off, run UAT, go live, and monitor closely, then train their admin.\""]]},
-{d:"Onboarding and interview",t:"Rapid-fire flashcards",fc:[
+{q:"Before go-live?",o:["Nothing, just flip the switch","Test one record end to end, confirm the mapping with the customer, and run UAT","Send the invoice","Wait a week"],a:1,e:"Test, get mapping sign-off, then UAT. It's the standard implementation playbook"},
+{q:"After go-live?",o:["Done","Monitor errors for the first 24 to 48 hours, check in with the customer, and document the setup","Delete logs","Turn off alerts"],a:1,e:"Early monitoring catches issues before the customer does."},
+["How to explain it","Get credentials, test in sandbox, validate with one record, get mapping sign-off, run UAT, go live, and monitor closely. Then train their admin."]]},
+{d:"Review",t:"Rapid-fire flashcards",fc:[
 ["Webhook silent: no events arrive. Check?","Is the receiving URL correct and reachable (HTTPS, firewall)? Does it return 2xx quickly? Is the webhook enabled? Any signature/secret mismatch?"],
 ["Webhook vs polling?","Webhook: the source pushes events to you. Polling: you ask repeatedly. Webhooks are faster and cheaper but need a reachable endpoint."],
 ["Sandbox vs production?","Sandbox: safe test environment with fake data. Production: real data. Wrong environment keys are a common cause of 401s."],
@@ -81,9 +81,9 @@ T("New dealer, first integration","You're the Technical Setup Specialist. Dealer
 ["Read a curl call","<code>curl -X POST URL -H \"Authorization: Bearer X\" -d '{...}'</code>: method, endpoint, headers, body."],
 ["What's idempotent?","Repeating the call gives the same result. GET and PUT are; POST usually isn't unless you add an idempotency key."],
 ["What goes in a good ticket reply?","What happened, the cause, what you changed, how you verified, and what to expect next."],
-["Question: what's your API experience?","SSO setups, bulk loader error codes, and a field-mapping integration between sister products. Strong troubleshooting process, growing hands-on tool time."],
-["Question: tell me about a hard problem.","Pick a migration: large dataset, a mismatch found during reconciliation, traced it, fixed it, zero rollbacks."],
-["Ask them","What are the most common issues in dealer setups? Which systems integrate most? What would success look like in my first 90 days?"]]}
+["A customer asks: what is an API?","A set of rules that lets two systems exchange data. One system sends a request, the other sends back a response."],
+["A customer asks: why did my sync fail?","Find the status code and error message first. Place it: authentication, mapping, rate limit, or pagination. Fix it, test one record, and report what changed."],
+["Questions to ask a customer during setup","Which systems are connecting? Who owns the credentials? Is sandbox or production going first? Who signs off on the mapping? Who gets the error alerts?"]]}
 ];
 let S={xp:0,done:{}};try{S=JSON.parse(localStorage.getItem(KEY))||S}catch(e){}
 const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
@@ -106,7 +106,7 @@ if(!ok)document.querySelectorAll(".opt")[q.a].classList.add("ok");
 document.getElementById("fb").innerHTML=`<div class=fb>${ok?"✅ Correct! +10 XP":"❌ Not quite."} ${q.e}</div><button onclick="step++;card()">Next</button>`;save()}
 function fin(){const l=L[cur],t=nq(l),p=Math.round(score/t*100);S.done[cur]=Math.max(S.done[cur]||0,p);S.xp+=20;save();
 $.innerHTML=`<div class=card style="text-align:center"><h1>${p==100?"🏆":"🎉"} Ticket closed</h1><p>You made ${score}/${t} right calls (${p}%). +20 XP bonus.</p>${p<100?`<p class=mu>Retry it and say the reasoning out loud.</p>`:""}</div><button onclick="start(${cur})" class=g>Retry</button><button onclick="home()">Back to tickets</button>`}
-function fc(i,flip){const l=L[cur],c=l.fc[i];if(i>=l.fc.length){S.done[cur]=100;S.xp+=30;save();return $.innerHTML=`<div class=card style="text-align:center"><h1>🏆 All tickets cleared</h1><p>Say the 'interview' lines out loud once before Wednesday. In your own words, not memorized.</p></div><button onclick="home()">Back to tickets</button>`}
+function fc(i,flip){const l=L[cur],c=l.fc[i];if(i>=l.fc.length){S.done[cur]=100;S.xp+=30;save();return $.innerHTML=`<div class=card style="text-align:center"><h1>🏆 All tickets cleared</h1><p>Say the explanations out loud once. In your own words, not memorized.</p></div><button onclick="home()">Back to tickets</button>`}
 $.innerHTML=`<button class=back onclick="home()">← Back</button><div class=bar><i style="width:${i/l.fc.length*100}%"></i></div><div class="card fc" onclick="fc(${i},${!flip})">${flip?`<div>${c[1]}</div>`:`<h2>${c[0]}</h2>`}</div><div class=mu style="text-align:center">${flip?"Did you answer first?":"Answer aloud, then tap to reveal."} Card ${i+1}/${l.fc.length}</div><button onclick="fc(${i+1})">${flip?"Next card":"Skip"}</button>`}
 home();
 </script></body></html>
